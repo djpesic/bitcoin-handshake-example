@@ -1,0 +1,11 @@
+[package]
+name = "bitcoin-p2p-example"
+version = "0.0.1"
+edition = "2021"
+authors = ["Djordje Pesic 91pesic@gmail.com"]
+description = "Example of handshake with bitcoin node"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
