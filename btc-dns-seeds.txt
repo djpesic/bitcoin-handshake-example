@@ -1,0 +1,2 @@
+testnet seed: seed.testnet.bitcoin.sprovoost.nl
+mainnet ? seed: seed.bitcoin.sipa.be

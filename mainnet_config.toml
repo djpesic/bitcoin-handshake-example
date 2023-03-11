@@ -1,0 +1,4 @@
+dns_seed = "seed.bitcoin.sipa.be" # dns seed for initial quering
+network_port = 8333 # btc network port (8333 for main net, 18333 for testnet)
+start_string = "0x0b110907" # Beginning of each message, identifying network.
+max_nbits = "0x1d00ffff"
