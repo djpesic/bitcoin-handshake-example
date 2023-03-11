@@ -7,10 +7,10 @@ use serde_derive::Deserialize;
 use crate::error;
 #[derive(Deserialize, Debug)]
 pub struct Config {
-    dns_seed: String,
-    network_port: u32,
-    start_string: String,
-    max_nbits: String,
+    pub dns_seed: String,
+    pub network_port: u32,
+    pub start_string: String,
+    pub max_nbits: String,
 }
 
 impl Config {
