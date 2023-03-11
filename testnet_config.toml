@@ -1,0 +1,3 @@
+dns_seed = "seed.testnet.bitcoin.sprovoost.nl" # dns seed for initial quering
+network_port = 18333 # btc network port (8333 for main net, 18333 for testnet)
+start_string = "0x0b110907" # Beginning of each message, identifying network.

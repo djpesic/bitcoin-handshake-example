@@ -10,7 +10,6 @@ pub struct Config {
     pub dns_seed: String,
     pub network_port: u32,
     pub start_string: String,
-    pub max_nbits: String,
 }
 
 impl Config {
