@@ -5,4 +5,4 @@ network_port = 8333
 # Beginning of each message, identifying network. Possible values: f9beb4d9 (mainet) or 0b110907 (testnet)
 start_string = "f9beb4d9"
 # Log level. Possible values: debug, error, info, trace, warn, off.
-log_level = "debug" 
+log_level = "info" 

@@ -55,14 +55,14 @@ async fn run() -> Result<(), error::Error> {
     let dns_seed = format!("{}:{}", conf.dns_seed, conf.network_port);
     let iter = lookup_host(dns_seed).await?;
     let mut handles = Vec::new();
-    iter.for_each(|elem| {
+    iter.take(1).for_each(|elem| {
         debug!("Resolved socket {:?}", elem);
         let conf = conf.clone();
         let id = tokio::spawn(async move { start_handshake(elem, conf.start_string).await });
         handles.push(id);
     });
     let join_results = join_all(handles).await;
-    for result in join_results{
+    for result in join_results {
         result?;
     }
 

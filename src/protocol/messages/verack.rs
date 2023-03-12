@@ -3,7 +3,7 @@ use tokio::io::{AsyncRead, BufReader};
 
 use crate::error;
 
-use super::{Header, Message};
+use super::{digest, Header, Message};
 
 #[derive(Debug)]
 pub struct Verack {
@@ -18,23 +18,23 @@ impl Verack {
                 start_string,
                 command_name: name.to_vec(),
                 payload_size: 0,
-                checksum: 0x5df6e0e2,
+                checksum: digest([]),
             },
         }
     }
 }
 #[async_trait]
 impl Message for Verack {
-    fn to_bytes(&self) -> error::Result<Vec<u8>> {
+    fn to_bytes(&mut self) -> error::Result<Vec<u8>> {
         self.header.to_bytes()
     }
 
-    async fn from_bytes<T>(input: BufReader<T>) -> error::Result<Self>
+    async fn from_bytes<T>(mut input: BufReader<T>) -> error::Result<Self>
     where
         T: AsyncRead + Unpin + Send,
         Self: Sized,
     {
-        let header = Header::from_bytes(input).await?;
+        let header = Header::from_bytes(&mut input).await?;
         Ok(Self { header })
     }
 }
