@@ -5,7 +5,7 @@ use figment::{
 use serde_derive::Deserialize;
 
 use crate::error;
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Config {
     pub dns_seed: String,
     pub network_port: u32,
@@ -42,7 +42,7 @@ impl Config {
                 "Invalid network port.",
             )));
         }
-        if (self.start_string != "0x0b110907") && (self.start_string != "0xf9beb4d9") {
+        if (self.start_string != "0b110907") && (self.start_string != "f9beb4d9") {
             return Err(error::Error::ConfigDataEror(String::from(
                 "Invalid start string",
             )));

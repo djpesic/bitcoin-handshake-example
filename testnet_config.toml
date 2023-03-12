@@ -2,7 +2,7 @@
 dns_seed = "seed.testnet.bitcoin.sprovoost.nl"
 # Btc network port (8333 for main net, 18333 for testnet)
 network_port = 18333
-# Beginning of each message, identifying network. Possible values: 0xf9beb4d9 (mainet) or 0x0b110907 (testnet)
-start_string = "0x0b110907"
+# Beginning of each message, identifying network. Possible values: f9beb4d9 (mainet) or 0b110907 (testnet)
+start_string = "0b110907"
 # Log level. Possible values: debug, error, info, trace, warn, off.
 log_level = "info"

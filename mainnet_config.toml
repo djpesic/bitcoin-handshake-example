@@ -2,7 +2,7 @@
 dns_seed = "seed.bitcoin.sipa.be" 
 # Btc network port (8333 for main net, 18333 for testnet)
 network_port = 8333
-# Beginning of each message, identifying network. Possible values: 0xf9beb4d9 (mainet) or 0x0b110907 (testnet)
-start_string = "0xf9beb4d9"
+# Beginning of each message, identifying network. Possible values: f9beb4d9 (mainet) or 0b110907 (testnet)
+start_string = "f9beb4d9"
 # Log level. Possible values: debug, error, info, trace, warn, off.
-log_level = "info" 
+log_level = "debug" 

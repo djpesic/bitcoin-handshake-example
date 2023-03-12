@@ -1,5 +1,6 @@
-use bitcoin_p2p_example::{config::Config, error};
+use bitcoin_p2p_example::{config::Config, error, protocol::handshake::start_handshake};
 use clap::Parser;
+use futures::future::join_all;
 use log::{debug, info};
 use simple_logger::SimpleLogger;
 use tokio::{main, net::lookup_host};
@@ -53,11 +54,14 @@ async fn run() -> Result<(), error::Error> {
 
     let dns_seed = format!("{}:{}", conf.dns_seed, conf.network_port);
     let iter = lookup_host(dns_seed).await?;
+    let mut handles = Vec::new();
     iter.for_each(|elem| {
         debug!("Resolved socket {:?}", elem);
-        tokio::spawn(async move { start_handshake(elem) });
+        let conf = conf.clone();
+        let id = tokio::spawn(async move { start_handshake(elem, conf.start_string).await });
+        handles.push(id);
     });
+    let ret = join_all(handles).await;
+
     Ok(())
 }
-
-async fn start_handshake(socket: std::net::SocketAddr) {}
