@@ -6,7 +6,7 @@ use tokio::{
 
 use crate::{
     error,
-    protocol::messages::{Message, Verack},
+    protocol::messages::{verack::Verack, Message},
 };
 
 pub async fn start_handshake(socket: std::net::SocketAddr, start_string: String) {
@@ -34,21 +34,22 @@ async fn run_handshake(
     // stream.write_all(&serialized_msg).await?;
 
     let reader = BufReader::new(serialized_msg.as_slice());
-    let msg1 =Verack::from_bytes(reader).await?;
+    let msg1 = Verack::from_bytes(reader).await?;
     Ok(())
 }
 
-mod test{
-    use tokio::io::BufReader;
+#[cfg(test)]
+mod test {
+    use crate::protocol::messages::verack::Verack;
     use crate::protocol::messages::Message;
-    use crate::protocol::messages::Verack;
+    use tokio::io::BufReader;
 
     #[tokio::test]
-    async fn test_serde(){
+    async fn test_serde() {
         let msg = Verack::new(String::from("f9beb4d9"));
         let serialized_msg = msg.to_bytes().unwrap();
         let reader = BufReader::new(serialized_msg.as_slice());
-        let msg1 =Verack::from_bytes(reader).await.unwrap();
+        let msg1 = Verack::from_bytes(reader).await.unwrap();
         let str1 = format!("{:?}", msg);
         let str2 = format!("{:?}", msg1);
         assert_eq!(str1, str2);

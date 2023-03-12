@@ -61,7 +61,10 @@ async fn run() -> Result<(), error::Error> {
         let id = tokio::spawn(async move { start_handshake(elem, conf.start_string).await });
         handles.push(id);
     });
-    let ret = join_all(handles).await;
+    let join_results = join_all(handles).await;
+    for result in join_results{
+        result?;
+    }
 
     Ok(())
 }
