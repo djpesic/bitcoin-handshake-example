@@ -4,7 +4,7 @@ use std::{
 };
 
 use async_trait::async_trait;
-use log::{debug, trace};
+use log::{trace};
 use tokio::io::{AsyncRead, AsyncReadExt, BufReader};
 
 use crate::{error, protocol::messages::digest};
@@ -72,7 +72,7 @@ impl Version {
             None => Vec::new(),
         }
     }
-    pub fn get_nonce(&self)->u64{
+    pub fn get_nonce(&self) -> u64 {
         self.payload.nonce
     }
 }
@@ -115,7 +115,7 @@ impl Message for Version {
         for _ in 0..header.payload_size {
             payload_vec.push(input.read_u8().await?);
         }
-        
+
         // Checksum check
         let checksum = digest(payload_vec.as_slice());
         let matches = checksum
@@ -128,7 +128,6 @@ impl Message for Version {
         }
 
         let mut input = BufReader::new(payload_vec.as_slice());
-
 
         let version = input.read_i32_le().await?;
         let services = input.read_u64_le().await?;

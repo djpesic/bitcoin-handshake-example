@@ -1,8 +1,7 @@
 use bitcoin_p2p_example::{config::Config, error, protocol::handshake::start_handshake};
 use clap::Parser;
 use futures::future::join_all;
-use log::{debug, info};
-use simple_logger::SimpleLogger;
+use log::{debug, info, LevelFilter};
 use tokio::{main, net::lookup_host};
 
 #[derive(Debug, Parser)]
@@ -11,6 +10,24 @@ struct Args {
     /// Config file path, relative to the project root.
     #[arg(short, long, default_value_t = String::from("mainnet_config.toml"))]
     config_file: String,
+}
+
+fn setup_logger(log_level: LevelFilter) -> error::Result<()> {
+    fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "{}[{}][{}] {}",
+                chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+                record.target(),
+                record.level(),
+                message
+            ))
+        })
+        .level(log_level)
+        .chain(std::io::stdout())
+        .chain(fern::log_file("output.log")?)
+        .apply()?;
+    Ok(())
 }
 
 #[main]
@@ -31,17 +48,11 @@ async fn run() -> Result<(), error::Error> {
     // Init logger
     let conf_result = match conf_result {
         Ok(conf) => {
-            SimpleLogger::new()
-                .env()
-                .with_level(conf.get_log_level())
-                .init()?;
+            setup_logger(conf.get_log_level())?;
             Ok(conf)
         }
         Err(e) => {
-            SimpleLogger::new()
-                .env()
-                .with_level(log::LevelFilter::Info)
-                .init()?;
+            setup_logger(LevelFilter::Info)?;
             Err(e)
         }
     };
@@ -55,7 +66,7 @@ async fn run() -> Result<(), error::Error> {
     let dns_seed = format!("{}:{}", conf.dns_seed, conf.network_port);
     let iter = lookup_host(dns_seed).await?;
     let mut handles = Vec::new();
-    iter.take(1).for_each(|elem| {
+    iter.for_each(|elem| {
         debug!("Resolved socket {:?}", elem);
         let conf = conf.clone();
         let id = tokio::spawn(async move { start_handshake(elem, conf.start_string).await });

@@ -1,9 +1,9 @@
 use std::net::{IpAddr, SocketAddr};
 
-use log::{debug, info, trace};
+use log::{debug, info};
 use rand::prelude::*;
 use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt, BufReader},
+    io::{AsyncWriteExt, BufReader},
     net::TcpStream,
 };
 
@@ -41,14 +41,46 @@ async fn run_handshake(
     let mut socket = socket;
     // Connect to a remote node
     let mut stream = TcpStream::connect(socket).await?;
+
+    handshake_version(&mut stream, &mut socket, start_string.clone()).await?;
+
+    handshake_verack(&mut stream, start_string).await?;
+
+    Ok(())
+}
+
+async fn handshake_verack(
+    stream: &mut TcpStream,
+    start_string: String,
+) -> Result<(), error::Error> {
+    // Send verack message
+    let mut msg = Verack::new(start_string);
+    info!("Sending verack message");
+    debug!("Message data: {:#x?}", msg);
+    let serialized_msg = msg.to_bytes()?;
+    stream.write_all(&serialized_msg).await?;
+
+    // Receive verack
+    let reader = BufReader::new(serialized_msg.as_slice());
+    let msg1 = Verack::from_bytes(reader).await?;
+    info!("Receive verack message");
+    debug!("Message data: {:#x?}", msg1);
+    Ok(())
+}
+
+async fn handshake_version(
+    stream: &mut TcpStream,
+    socket: &mut SocketAddr,
+    start_string: String,
+) -> Result<(), error::Error> {
     let mut recv = stream.local_addr()?;
 
     to_ipv6(&mut recv);
-    to_ipv6(&mut socket);
+    to_ipv6(socket);
 
     // Send version message
-    let mut send_version = Version::new(start_string.clone(), generate_nonce(), socket, recv)?;
-    info!("Sendding version message");
+    let mut send_version = Version::new(start_string.clone(), generate_nonce(), *socket, recv)?;
+    info!("Sending version message");
     debug!("Message data: {:#x?}", send_version);
     let serialized_msg = send_version.to_bytes()?;
     stream.write_all(&serialized_msg).await?;
@@ -60,21 +92,9 @@ async fn run_handshake(
     info!("Received version messasge");
     debug!("Message data: {:#x?}", received_version);
 
-    if send_version.get_nonce() == received_version.get_nonce(){
+    if send_version.get_nonce() == received_version.get_nonce() {
         return Err(error::Error::NonceConflictError);
     }
-
-    // Send verack message
-    // let mut msg = Verack::new(start_string);
-    // debug!("Send verack: {:?}", msg);
-    // let serialized_msg = msg.to_bytes()?;
-    // stream.write_all(&serialized_msg).await?;
-    // Receive verack
-
-    // let reader = BufReader::new(serialized_msg.as_slice());
-    // let msg1 = Verack::from_bytes(reader).await?;
-
-    // stream.shutdown().await?;
     Ok(())
 }
 
