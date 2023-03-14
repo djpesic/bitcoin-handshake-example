@@ -19,6 +19,6 @@ rand = "0.8.5"
 serde = "1.0"
 serde_derive = "1.0"
 sha2 = "0.10.6"
-simple_logger = "4.0"
+simple_logger = {version = "4.0", features = ["colored"]}
 thiserror = "1.0"
 tokio = { version = "1", features = ["full"] }

@@ -4,7 +4,6 @@ use std::{
 };
 
 use async_trait::async_trait;
-use log::{trace};
 use tokio::io::{AsyncRead, AsyncReadExt, BufReader};
 
 use crate::{error, protocol::messages::digest};
@@ -97,8 +96,6 @@ impl Message for Version {
 
         let checksum = digest(payload.as_slice());
         self.header.update_checksum(checksum);
-        trace!("New checksum: {:#x?}", self.header.checksum);
-
         let mut header = self.header.to_bytes()?;
         header.extend(payload.iter());
         Ok(header)
